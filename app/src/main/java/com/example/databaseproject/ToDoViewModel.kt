@@ -8,13 +8,14 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-import java.time.Instant
 import java.util.Date
 import java.util.Locale
 
 class ToDoViewModel:ViewModel() {
     val todoDao= MainApplication.todoDatabase.getToDoDao()
     val todoList:LiveData<List<Todo>> = todoDao.getAllTodo()
+    //gettoDo ekle
+    val getTodo = MainApplication.todoDatabase.getToDoDao()
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun addTodo(title:String){

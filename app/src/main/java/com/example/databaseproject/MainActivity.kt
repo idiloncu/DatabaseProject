@@ -10,7 +10,6 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.room.util.newStringBuilder
 import com.example.databaseproject.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
