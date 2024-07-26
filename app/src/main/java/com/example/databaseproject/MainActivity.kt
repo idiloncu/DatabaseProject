@@ -45,6 +45,8 @@ class MainActivity : AppCompatActivity() {
             }
                 binding.editTextText.setText(stringBuilder.toString())
         })
+
+
     }
 
 }
