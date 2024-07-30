@@ -9,24 +9,27 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.databaseproject.databinding.RecyclerRowBinding
 import org.w3c.dom.Text
 
-class TodoAdapter(private val todoDataList:List<Todo>,
-                  private val onItemClicked:(Todo)->Unit) : ListAdapter<ToDoModel,
+class TodoAdapter(private var todoList: List<Todo>, private val onItemClicked: (Todo) -> Unit) : ListAdapter<ToDoModel,
         TodoAdapter.ToDoHolder>(TodoCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ToDoHolder {
         val binding = RecyclerRowBinding.inflate(LayoutInflater.from(parent.context),parent,false)
         return ToDoHolder(binding){ position->
-            onItemClicked(todoDataList.get(position))
+            onItemClicked(getItem(position))
         }
     }
-    override fun getItemCount(): Int {
-        return todoDataList.size
+    fun onItemClicked(item:ToDoModel){
+
     }
+
+//    override fun getItemCount(): Int {
+//        return currentList.size
+//    }
     override fun onBindViewHolder(holder: ToDoHolder, position: Int) {
         holder.bind(getItem(position))
     }
     inner class ToDoHolder(private val binding:RecyclerRowBinding,
-                           private val onItemClick:(Int)->Unit
+                           private val onItemClick:(Int)->(Unit)
     ):RecyclerView.ViewHolder(binding.root){
         init {
             itemView.setOnClickListener{
@@ -35,7 +38,6 @@ class TodoAdapter(private val todoDataList:List<Todo>,
         }
         fun bind(model: ToDoModel){
             with(binding){
-              val title : Text = itemView.findViewById(R.id.recyclerView)
                 binding.recyclerViewTextView.text=model.title
 
             }

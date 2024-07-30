@@ -9,7 +9,7 @@ import com.example.databaseproject.Todo
 @Dao
 interface TodoDao {
     @Query("SELECT * FROM TODO")
-    fun getAllTodo():LiveData<List<Todo>>
+    fun getAllTodo():List<Todo>
 
     @Insert
     fun addToDo(todo: Todo)

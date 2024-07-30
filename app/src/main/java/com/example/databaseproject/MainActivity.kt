@@ -11,8 +11,10 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.databaseproject.databinding.ActivityMainBinding
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -27,7 +29,9 @@ class MainActivity : AppCompatActivity() {
         val toDoViewModel = ViewModelProvider(this)[ToDoViewModel::class.java]
         enableEdgeToEdge()
 
-        todoAdapter = TodoAdapter(todoAdapter.submitList()){ todo->
+        val newList = listOf(Todo(0,"ffff","111"))
+
+        todoAdapter = TodoAdapter(newList){ todo->
             Toast.makeText(this,"Added ${todo.title}",Toast.LENGTH_LONG).show()
         }
 
@@ -37,37 +41,52 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-
         binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(this@MainActivity)
             adapter = todoAdapter
         }
+        binding.recyclerView.adapter.apply {
+            binding.recyclerView.layoutManager = LinearLayoutManager(this@MainActivity)
 
+        }
         binding.button.setOnClickListener{
             val title = binding.editText.text.toString()
             if (title.isNotEmpty()) {
                 todoViewModel.addTodo(title)
+
                 binding.editText.text.clear()
             }
         }
         todoViewModel.addTodo("Example Task")
-        todoViewModel.todoList.observe(this, Observer<List<Todo>> { todos ->
+        lifecycleScope.launch {todoViewModel.getAllToDo().observe(this@MainActivity, Observer<List<Todo>> { todos ->
             val stringBuilder = StringBuilder()
+            todoAdapter.notifyDataSetChanged()
+            todoAdapter = TodoAdapter(todos){ todo->
+                //Toast.makeText(this,"Added ${todo.title}",Toast.LENGTH_LONG).show()
+            }
             todos.forEach { todo ->
-                stringBuilder.append("${todo.title} - ${todo.createdAt}\n")
+                stringBuilder.append("${todo.title} + ${todo.createdAt}\n")
             }
                 binding.editText.setText(stringBuilder.toString())
         })
     }
+        lifecycleScope.launch { todoViewModel.allTodos.observe(this@MainActivity) {todos ->
+            todoAdapter.currentList
+        } }
+        }
 
     private fun getTodoList(selectedItem : ToDoModel){
-        todoAdapter.submitList(todoAdapter.currentList.map { newItem->
+      todoAdapter.submitList(todoAdapter.currentList.map { newItem->
             if (newItem==selectedItem){
-               newItem.title()
+                ToDoModel(
+                    id = newItem.id,
+                    title = newItem.title,
+                    createdAt = newItem.createdAt
+                )
             }
             else{
                 newItem
             }
-        })
+        }.sortedBy { it.title })
     }
 }
