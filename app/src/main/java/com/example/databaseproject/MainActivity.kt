@@ -17,6 +17,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private val todoViewModel: ToDoViewModel by viewModels()
     private lateinit var todoAdapter: TodoAdapter
+    private lateinit var todoDatabase: TodoDatabase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,7 +25,6 @@ class MainActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
         todoAdapter = TodoAdapter()
-        val newList = listOf(Todo(0, "ffff", "111"))
 
         var database = Room.databaseBuilder(
             applicationContext,
@@ -33,40 +33,45 @@ class MainActivity : AppCompatActivity() {
         ).build()
 
         val dao: TodoDao = database.getToDoDao()
-
         binding.recyclerView.adapter = todoAdapter
         binding.recyclerView.layoutManager = LinearLayoutManager(this@MainActivity)
+        submitTodo()
         binding.button.setOnClickListener {
             val title = binding.editText.text.toString()
             if (title.isNotEmpty()) {
-                todoViewModel.addTodo("title", dao)
-                var todoList = mutableListOf<ToDoModel>()
-                todoList.add(ToDoModel(0, title, "111"))
-                todoAdapter.submitList(todoList)
+                todoViewModel.addTodo("title",  dao)
+                var todoList = mutableListOf<TodoDatabase>()
+                //  todoList.add(0, title, "111")
+                todoAdapter.submitList(todoAdapter.currentList.map { newItem ->
+                    ToDoModel(
+                        id = newItem.id,
+                        title = newItem.title,
+                        createdAt = newItem.createdAt
+                    )
+                })
                 binding.editText.text.clear()
+                //eklenilen rw listesi tek itemli, eklemem gereken liste db den gelecek
             }
         }
-
-
         lifecycleScope.launch {
             todoViewModel.allTodos.observe(this@MainActivity) { todos ->
                 todoAdapter.currentList
             }
         }
     }
-    private fun getTodoList(selectedItem: ToDoModel) {
-        todoAdapter.submitList(todoAdapter.currentList.map { newItem ->
-            if (newItem == selectedItem) {
-                ToDoModel(
-                    id = newItem.id,
-                    title = newItem.title,
-                    createdAt = newItem.createdAt
-                )
-            } else {
-                newItem
-            }
-        }.sortedBy { it.title })
-    }
+//    private fun getTodoList(selectedItem: ToDoModel) {
+//        todoAdapter.submitList(todoAdapter.currentList.map { newItem ->
+//            if (newItem == selectedItem) {
+//                ToDoModel(
+//                    id = newItem.id,
+//                    title = newItem.title,
+//                    createdAt = newItem.createdAt
+//                )
+//            } else {
+//                newItem
+//            }
+//        }.sortedBy { it.title })
+//    }
     fun submitTodo() {
         lifecycleScope.launch {
             todoViewModel.allTodos.observe(this@MainActivity, Observer { todos ->
@@ -78,6 +83,5 @@ class MainActivity : AppCompatActivity() {
 
             })
         }
-
     }
 }
