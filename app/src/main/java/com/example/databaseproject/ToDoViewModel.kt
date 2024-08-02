@@ -14,7 +14,6 @@ import java.util.Locale
 class ToDoViewModel : ViewModel() {
     private val _allTodos = MutableLiveData<List<Todo>>()
     val allTodos: LiveData<List<Todo>> = _allTodos
-
     fun addTodo(title: String, dao: TodoDao) {
         viewModelScope.launch(Dispatchers.IO) {
             val nowDate = Date()
@@ -23,4 +22,5 @@ class ToDoViewModel : ViewModel() {
             dao.addToDo(Todo(title = title, createdAt = createdAt))
         }
     }
+
 }

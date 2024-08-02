@@ -10,4 +10,9 @@ abstract class TodoDatabase:RoomDatabase() {
         const val NAME = "Todo_DB"
     }
     abstract fun getToDoDao():TodoDao
+
+    fun getTodoList():List<Todo>{
+        return getToDoDao().getAllTodo()
+
+    }
 }

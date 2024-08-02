@@ -1,6 +1,8 @@
 package com.example.databaseproject
 
+import android.R
 import android.os.Bundle
+import android.widget.ArrayAdapter
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
@@ -39,9 +41,14 @@ class MainActivity : AppCompatActivity() {
         binding.button.setOnClickListener {
             val title = binding.editText.text.toString()
             if (title.isNotEmpty()) {
-                todoViewModel.addTodo("title",  dao)
-                var todoList = mutableListOf<TodoDatabase>()
-                //  todoList.add(0, title, "111")
+                todoViewModel.addTodo(title, dao)
+                lifecycleScope.launch {
+                    var todoList = mutableListOf<TodoDatabase>()
+                    for (i in 1..20) {
+                        todoList.add(TodoDatabase(i, "title", "111"))
+                        val adapter = ArrayAdapter(this, R.layout.simple_list_item_1, todoList)
+                    }
+                binding.editText.text.clear()
                 todoAdapter.submitList(todoAdapter.currentList.map { newItem ->
                     ToDoModel(
                         id = newItem.id,
@@ -49,6 +56,8 @@ class MainActivity : AppCompatActivity() {
                         createdAt = newItem.createdAt
                     )
                 })
+                }
+                database.getTodoList()
                 binding.editText.text.clear()
                 //eklenilen rw listesi tek itemli, eklemem gereken liste db den gelecek
             }
@@ -59,19 +68,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-//    private fun getTodoList(selectedItem: ToDoModel) {
-//        todoAdapter.submitList(todoAdapter.currentList.map { newItem ->
-//            if (newItem == selectedItem) {
-//                ToDoModel(
-//                    id = newItem.id,
-//                    title = newItem.title,
-//                    createdAt = newItem.createdAt
-//                )
-//            } else {
-//                newItem
-//            }
-//        }.sortedBy { it.title })
-//    }
     fun submitTodo() {
         lifecycleScope.launch {
             todoViewModel.allTodos.observe(this@MainActivity, Observer { todos ->
@@ -80,7 +76,6 @@ class MainActivity : AppCompatActivity() {
                     todoList.add(ToDoModel(todo.id, todo.title, todo.createdAt))
                 }
                 todoAdapter.submitList(todoList)
-
             })
         }
     }
