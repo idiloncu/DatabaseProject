@@ -5,14 +5,16 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import com.example.databaseproject.Todo
+import io.reactivex.Completable
+import io.reactivex.Flowable
 
 @Dao
 interface TodoDao {
     @Query("SELECT * FROM TODO")
-    fun getAllTodo():List<Todo>
+    fun getAllTodo():Flowable<List<Todo>>
 
     @Insert
-    fun addToDo(todo: Todo)
+    fun addToDo(todo: Todo) : Completable
 
     @Query("Delete FROM Todo where id = :id")
     fun deleteTodo(id:Int)

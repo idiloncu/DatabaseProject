@@ -9,7 +9,9 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.databaseproject.databinding.RecyclerRowBinding
 
-class TodoAdapter() : ListAdapter<ToDoModel,TodoAdapter.ToDoHolder>(TodoCallback()) {
+class TodoAdapter() :
+    ListAdapter<ToDoModel,
+            TodoAdapter.ToDoHolder>(TodoCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ToDoHolder {
         val binding = RecyclerRowBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -21,6 +23,7 @@ class TodoAdapter() : ListAdapter<ToDoModel,TodoAdapter.ToDoHolder>(TodoCallback
     fun onItemClicked(item: ToDoModel) {
 
     }
+
     override fun onBindViewHolder(holder: ToDoHolder, position: Int) {
         Log.d("log", "onBindViewHolder: ")
         holder.bind(currentList[position])
@@ -31,16 +34,20 @@ class TodoAdapter() : ListAdapter<ToDoModel,TodoAdapter.ToDoHolder>(TodoCallback
         private val onItemClick: (Int) -> (Unit)
     ) : RecyclerView.ViewHolder(binding.root) {
 
+
         fun bind(model: ToDoModel) {
             with(binding) {
                 binding.recyclerViewTextView.text = model.title
+
             }
         }
     }
+
     class TodoCallback : DiffUtil.ItemCallback<ToDoModel>() {
         override fun areItemsTheSame(oldItem: ToDoModel, newItem: ToDoModel): Boolean {
             return oldItem.id == newItem.id
         }
+
         @SuppressLint("DiffUtilEquals")
         override fun areContentsTheSame(oldItem: ToDoModel, newItem: ToDoModel): Boolean {
             return oldItem == newItem

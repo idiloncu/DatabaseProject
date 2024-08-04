@@ -6,13 +6,9 @@ import com.example.databaseproject.Todo
 
 @Database(entities = [Todo::class], version = 1)
 abstract class TodoDatabase:RoomDatabase() {
-    companion object{
-        const val NAME = "Todo_DB"
-    }
     abstract fun getToDoDao():TodoDao
 
-    fun getTodoList():List<Todo>{
-        return getToDoDao().getAllTodo()
-
+    companion object{
+        const val NAME = "Todo_DB"
     }
 }

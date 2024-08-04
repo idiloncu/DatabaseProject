@@ -1,14 +1,13 @@
 package com.example.databaseproject
 
-import android.R
 import android.os.Bundle
-import android.widget.ArrayAdapter
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.room.Room
+import androidx.room.RoomDatabase
 import com.example.databaseproject.databinding.ActivityMainBinding
 import com.example.databaseproject.db.TodoDao
 import com.example.databaseproject.db.TodoDatabase
@@ -19,7 +18,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private val todoViewModel: ToDoViewModel by viewModels()
     private lateinit var todoAdapter: TodoAdapter
-    private lateinit var todoDatabase: TodoDatabase
+    private lateinit var db : TodoDatabase
+    private lateinit var dao : TodoDao
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,6 +27,7 @@ class MainActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
         todoAdapter = TodoAdapter()
+        val newList = listOf(Todo(0, "ffff", "111"))
 
         var database = Room.databaseBuilder(
             applicationContext,
@@ -34,39 +35,44 @@ class MainActivity : AppCompatActivity() {
             NAME
         ).build()
 
-        val dao: TodoDao = database.getToDoDao()
         binding.recyclerView.adapter = todoAdapter
         binding.recyclerView.layoutManager = LinearLayoutManager(this@MainActivity)
-        submitTodo()
         binding.button.setOnClickListener {
             val title = binding.editText.text.toString()
             if (title.isNotEmpty()) {
-                todoViewModel.addTodo(title, dao)
-                lifecycleScope.launch {
-                    var todoList = mutableListOf<TodoDatabase>()
-                    for (i in 1..20) {
-                        todoList.add(TodoDatabase(i, "title", "111"))
-                        val adapter = ArrayAdapter(this, R.layout.simple_list_item_1, todoList)
-                    }
+                todoViewModel.addTodo("title", dao)
+                var todoList = mutableListOf<ToDoModel>()
+                todoList.add(ToDoModel(0, title, "111"))
+                todoAdapter.submitList(todoList)
                 binding.editText.text.clear()
-                todoAdapter.submitList(todoAdapter.currentList.map { newItem ->
-                    ToDoModel(
-                        id = newItem.id,
-                        title = newItem.title,
-                        createdAt = newItem.createdAt
-                    )
-                })
-                }
-                database.getTodoList()
-                binding.editText.text.clear()
-                //eklenilen rw listesi tek itemli, eklemem gereken liste db den gelecek
             }
         }
+
+
         lifecycleScope.launch {
             todoViewModel.allTodos.observe(this@MainActivity) { todos ->
                 todoAdapter.currentList
             }
         }
+
+        db = Room.databaseBuilder(applicationContext, TodoDatabase::class.java, NAME)
+           // .allowMainThreadQueries()  //it worked but ı should use Rxjava
+            .build()
+        dao = db.getToDoDao()
+    }
+    private fun getTodoList(selectedItem: ToDoModel) {
+        dao.getAllTodo()
+        todoAdapter.submitList(todoAdapter.currentList.map { newItem ->
+            if (newItem == selectedItem) {
+                ToDoModel(
+                    id = newItem.id,
+                    title = newItem.title,
+                    createdAt = newItem.createdAt
+                )
+            } else {
+                newItem
+            }
+        }.sortedBy { it.title })
     }
     fun submitTodo() {
         lifecycleScope.launch {
@@ -76,7 +82,9 @@ class MainActivity : AppCompatActivity() {
                     todoList.add(ToDoModel(todo.id, todo.title, todo.createdAt))
                 }
                 todoAdapter.submitList(todoList)
+
             })
         }
+
     }
 }
