@@ -3,15 +3,17 @@ package com.example.databaseproject
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.room.Room
-import androidx.room.RoomDatabase
 import com.example.databaseproject.databinding.ActivityMainBinding
+import com.example.databaseproject.model.Todo
 import com.example.databaseproject.db.TodoDao
 import com.example.databaseproject.db.TodoDatabase
 import com.example.databaseproject.db.TodoDatabase.Companion.NAME
+import com.example.databaseproject.model.ToDoModel
+import com.example.databaseproject.adapter.TodoAdapter
+import com.example.databaseproject.viewmodel.ToDoViewModel
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -26,65 +28,42 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
-        todoAdapter = TodoAdapter()
-        val newList = listOf(Todo(0, "ffff", "111"))
 
-        var database = Room.databaseBuilder(
-            applicationContext,
-            TodoDatabase::class.java,
-            NAME
-        ).build()
+        db = Room.databaseBuilder(applicationContext, TodoDatabase::class.java, NAME)
+            .allowMainThreadQueries()    // it worked but I should use Rxjava for huge apps
+            .build()
+        dao = db.getToDoDao()
+
+       todoAdapter = TodoAdapter(dao.getAllTodo())
 
         binding.recyclerView.adapter = todoAdapter
         binding.recyclerView.layoutManager = LinearLayoutManager(this@MainActivity)
-        binding.button.setOnClickListener {
-            val title = binding.editText.text.toString()
-            if (title.isNotEmpty()) {
-                todoViewModel.addTodo("title", dao)
-                var todoList = mutableListOf<ToDoModel>()
-                todoList.add(ToDoModel(0, title, "111"))
-                todoAdapter.submitList(todoList)
-                binding.editText.text.clear()
-            }
-        }
 
+            val todo = Todo(binding.editText.text.toString(),binding.editText.text.toString())
+            dao.addToDo(todo)
+
+            binding.button.setOnClickListener {
+                val title = binding.editText.text.toString()
+                if (title.isNotEmpty()) {
+                    todoViewModel.addTodo("title", dao)
+                    var todoList = mutableListOf<ToDoModel>()
+                   todoList.add(ToDoModel(0, title, "111"))
+                    todoAdapter.todoList
+                    binding.editText.text.clear()
+                }
+            }
 
         lifecycleScope.launch {
             todoViewModel.allTodos.observe(this@MainActivity) { todos ->
-                todoAdapter.currentList
+                todoAdapter.todoList
             }
         }
-
-        db = Room.databaseBuilder(applicationContext, TodoDatabase::class.java, NAME)
-           // .allowMainThreadQueries()  //it worked but ı should use Rxjava
-            .build()
-        dao = db.getToDoDao()
     }
-    private fun getTodoList(selectedItem: ToDoModel) {
-        dao.getAllTodo()
-        todoAdapter.submitList(todoAdapter.currentList.map { newItem ->
-            if (newItem == selectedItem) {
-                ToDoModel(
-                    id = newItem.id,
-                    title = newItem.title,
-                    createdAt = newItem.createdAt
-                )
-            } else {
-                newItem
-            }
-        }.sortedBy { it.title })
-    }
-    fun submitTodo() {
-        lifecycleScope.launch {
-            todoViewModel.allTodos.observe(this@MainActivity, Observer { todos ->
-                val todoList = mutableListOf<ToDoModel>()
-                todos.forEach { todo ->
-                    todoList.add(ToDoModel(todo.id, todo.title, todo.createdAt))
-                }
-                todoAdapter.submitList(todoList)
+    private fun handleResponse(list:List<Todo>){
+        binding.recyclerView.layoutManager=LinearLayoutManager(this)
+        val adapter= TodoAdapter(list)
+        binding.recyclerView.adapter=adapter
 
-            })
-        }
 
     }
 }

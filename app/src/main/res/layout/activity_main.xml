@@ -35,6 +35,7 @@
         android:layout_width="100dp"
         android:layout_height="57dp"
         android:layout_marginTop="212dp"
+        android:onClick="save"
         android:text="SAVE"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"

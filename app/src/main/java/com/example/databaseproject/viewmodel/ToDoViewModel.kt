@@ -1,9 +1,10 @@
-package com.example.databaseproject
+package com.example.databaseproject.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.databaseproject.model.Todo
 import com.example.databaseproject.db.TodoDao
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
