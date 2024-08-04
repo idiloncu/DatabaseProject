@@ -19,7 +19,6 @@ class TodoAdapter(val todoList: List<Todo>) : RecyclerView.Adapter<TodoAdapter.T
     }
     override fun onBindViewHolder(holder: ToDoHolder, position: Int) {
         holder.recyclerRowBinding.recyclerViewTextView.text=todoList.get(position).title
-        //holder.recyclerRowBinding.recyclerViewTextView.text = todoList.get(position).createdAt
         holder.itemView.setOnClickListener {
             Log.v("test", "item clicked")
         }

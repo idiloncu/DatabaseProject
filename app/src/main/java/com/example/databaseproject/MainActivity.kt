@@ -20,8 +20,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private val todoViewModel: ToDoViewModel by viewModels()
     private lateinit var todoAdapter: TodoAdapter
-    private lateinit var db : TodoDatabase
-    private lateinit var dao : TodoDao
+    private lateinit var db: TodoDatabase
+    private lateinit var dao: TodoDao
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,36 +34,27 @@ class MainActivity : AppCompatActivity() {
             .build()
         dao = db.getToDoDao()
 
-       todoAdapter = TodoAdapter(dao.getAllTodo())
+        todoAdapter = TodoAdapter(dao.getAllTodo())
 
         binding.recyclerView.adapter = todoAdapter
         binding.recyclerView.layoutManager = LinearLayoutManager(this@MainActivity)
 
-            val todo = Todo(binding.editText.text.toString(),binding.editText.text.toString())
-            dao.addToDo(todo)
+        val todo = Todo(binding.editText.text.toString(), binding.editText.text.toString())
+        dao.addToDo(todo)
+        binding.button.setOnClickListener {
+            val title = binding.editText.text.toString()
+            if (title.isNotEmpty()) {
+                todoViewModel.addTodo(binding.editText.text.toString(), dao)
+                binding.editText.text.clear()
 
-            binding.button.setOnClickListener {
-                val title = binding.editText.text.toString()
-                if (title.isNotEmpty()) {
-                    todoViewModel.addTodo("title", dao)
-                    var todoList = mutableListOf<ToDoModel>()
-                   todoList.add(ToDoModel(0, title, "111"))
-                    todoAdapter.todoList
-                    binding.editText.text.clear()
-                }
+                //var todoList = mutableListOf<ToDoModel>()
+               // todoList.add(ToDoModel(0, title, "111"))
             }
-
+        }
         lifecycleScope.launch {
             todoViewModel.allTodos.observe(this@MainActivity) { todos ->
                 todoAdapter.todoList
             }
         }
-    }
-    private fun handleResponse(list:List<Todo>){
-        binding.recyclerView.layoutManager=LinearLayoutManager(this)
-        val adapter= TodoAdapter(list)
-        binding.recyclerView.adapter=adapter
-
-
     }
 }
