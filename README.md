@@ -1,4 +1,4 @@
-Projede Kullanılan Yapılar
+<h1>Projede Kullanılan Yapılar
 -Recycler View
 -Room Database
 -View Binding
