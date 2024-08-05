@@ -2,6 +2,7 @@ package com.example.databaseproject
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -14,6 +15,7 @@ import com.example.databaseproject.db.TodoDatabase
 import com.example.databaseproject.db.TodoDatabase.Companion.NAME
 import com.example.databaseproject.model.Todo
 import com.example.databaseproject.viewmodel.ToDoViewModel
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -61,7 +63,7 @@ class MainActivity : AppCompatActivity() {
                 todoViewModel.addTodo(binding.editText.text.toString(), dao)
                 todoAdapter.notifyDataSetChanged()
                 binding.editText.text.clear()
-
+                Toast.makeText(this, "Todo is successfully Added", Toast.LENGTH_LONG).show()
             }
         }
     }
@@ -72,6 +74,7 @@ class MainActivity : AppCompatActivity() {
             todoViewModel.deleteTodo(it, dao)
             todoAdapter.notifyDataSetChanged()
             binding.editText.text.clear()
+            Toast.makeText(this, "Todo is Deleted", Toast.LENGTH_LONG).show()
         }
     }
 }

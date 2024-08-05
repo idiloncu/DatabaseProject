@@ -29,6 +29,7 @@
         android:layout_marginStart="84dp"
         android:layout_marginTop="44dp"
         android:ems="10"
+        android:hint="Create or Delete todo"
         android:inputType="text"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
