@@ -4,4 +4,4 @@ Yeni bir todo eklemek istendiğinde EditText'e yazılır Save butonuna tıklanı
 
 
 ![image](https://github.com/user-attachments/assets/ab26a473-62d2-4bcf-b03a-3b2561daf8a2)
-Yeni ToDo eklendi.
+    Yeni ToDo eklendi.
