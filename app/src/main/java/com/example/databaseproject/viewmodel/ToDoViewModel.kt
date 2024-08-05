@@ -24,4 +24,15 @@ class ToDoViewModel : ViewModel() {
             dao.addToDo(Todo(title = title, createdAt = createdAt))
         }
     }
+    fun deleteTodo(todo: Todo, dao: TodoDao) {
+        viewModelScope.launch(Dispatchers.IO) {
+            dao.deleteTodo(todo)
+            updateTodo(dao)
+        }
+    }
+    fun updateTodo(dao: TodoDao){
+        viewModelScope.launch(Dispatchers.IO) {
+          _allTodos.postValue(dao.getAllTodo())
+        }
+    }
 }

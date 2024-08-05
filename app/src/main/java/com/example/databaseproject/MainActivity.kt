@@ -1,6 +1,7 @@
 package com.example.databaseproject
 
 import android.os.Bundle
+import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -32,24 +33,45 @@ class MainActivity : AppCompatActivity() {
             .allowMainThreadQueries()    // it worked but I should use Rxjava for huge apps
             .build()
         dao = db.getToDoDao()
+        save(view)
+
+
+        if (binding.editText.text == binding.recyclerView.context){
+            delete(view)
+        }
 
         todoAdapter = TodoAdapter(dao.getAllTodo())
-
         binding.recyclerView.adapter = todoAdapter
         binding.recyclerView.layoutManager = LinearLayoutManager(this@MainActivity)
 
-        val todo = Todo(binding.editText.text.toString(), binding.editText.text.toString())
-        binding.button.setOnClickListener {
-            val title = binding.editText.text.toString()
-            if (title.isNotEmpty()) {
-                todoViewModel.addTodo(binding.editText.text.toString(), dao)
-                binding.editText.text.clear()
-            }
-        }
         lifecycleScope.launch {
             todoViewModel.allTodos.observe(this@MainActivity) { todos ->
                 todoAdapter.todoList
             }
+        }
+        binding.deleteButton.setOnClickListener {
+            delete(view)
+        }
+    }
+    fun save(view: View){
+        val todo = Todo(binding.editText.text.toString(), binding.editText.text.toString())
+        binding.saveButton.setOnClickListener {
+            val title = binding.editText.text.toString()
+            if (title.isNotEmpty()) {
+                todoViewModel.addTodo(binding.editText.text.toString(), dao)
+                todoAdapter.notifyDataSetChanged()
+                binding.editText.text.clear()
+
+            }
+        }
+    }
+    fun delete(view: View){
+        val title = binding.editText.text.toString()
+        val todoDelete=todoAdapter.todoList.find { it.title == title }
+        todoDelete?.let {
+            todoViewModel.deleteTodo(it, dao)
+            todoAdapter.notifyDataSetChanged()
+            binding.editText.text.clear()
         }
     }
 }
