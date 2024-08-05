@@ -1,5 +1,6 @@
-<h1>Projede Kullanılan Yapılar
--Recycler View
+<h2>Projede Kullanılan Yapılar
+  
+<lo>Recycler View
 -Room Database
 -View Binding
 -MVVM Mimarisi
