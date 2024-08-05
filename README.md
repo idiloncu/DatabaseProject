@@ -5,7 +5,7 @@
 <li>Room Database </li>
 <li>View Binding</li>
 <li>MVVM Mimarisi</li>
-<li>RxJava uygulamanın küçük çaplı bir app olması nedeniyle kullanılmadı
+<li>RxJava,uygulamanın küçük çaplı bir app olması nedeniyle kullanılmadı.
 Ancak bu uygulamayı yaparken RxJava hakkında da bilgi sahibi oldum.</li>
 </h4>
 
