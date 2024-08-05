@@ -40,7 +40,7 @@ class MainActivity : AppCompatActivity() {
         binding.recyclerView.layoutManager = LinearLayoutManager(this@MainActivity)
 
         val todo = Todo(binding.editText.text.toString(), binding.editText.text.toString())
-        dao.addToDo(todo)
+       // dao.addToDo(todo)
         binding.button.setOnClickListener {
             val title = binding.editText.text.toString()
             if (title.isNotEmpty()) {
