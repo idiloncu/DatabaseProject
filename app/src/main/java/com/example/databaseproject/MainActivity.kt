@@ -13,6 +13,7 @@ import com.example.databaseproject.databinding.ActivityMainBinding
 import com.example.databaseproject.db.TodoDao
 import com.example.databaseproject.db.TodoDatabase
 import com.example.databaseproject.db.TodoDatabase.Companion.NAME
+import com.example.databaseproject.model.ToDoModel
 import com.example.databaseproject.model.Todo
 import com.example.databaseproject.viewmodel.ToDoViewModel
 import com.google.android.material.snackbar.Snackbar
@@ -36,8 +37,6 @@ class MainActivity : AppCompatActivity() {
             .build()
         dao = db.getToDoDao()
         save(view)
-
-
         if (binding.editText.text == binding.recyclerView.context){
             delete(view)
         }
@@ -45,6 +44,7 @@ class MainActivity : AppCompatActivity() {
         todoAdapter = TodoAdapter(dao.getAllTodo())
         binding.recyclerView.adapter = todoAdapter
         binding.recyclerView.layoutManager = LinearLayoutManager(this@MainActivity)
+
 
         lifecycleScope.launch {
             todoViewModel.allTodos.observe(this@MainActivity) { todos ->
@@ -54,18 +54,19 @@ class MainActivity : AppCompatActivity() {
         binding.deleteButton.setOnClickListener {
             delete(view)
         }
+
     }
     fun save(view: View){
-        val todo = Todo(binding.editText.text.toString(), binding.editText.text.toString())
-        binding.saveButton.setOnClickListener {
+
+        binding.saveButton.setOnClickListener{
             val title = binding.editText.text.toString()
             if (title.isNotEmpty()) {
                 todoViewModel.addTodo(binding.editText.text.toString(), dao)
-                todoAdapter.notifyDataSetChanged()
                 binding.editText.text.clear()
                 Toast.makeText(this, "Todo is successfully Added", Toast.LENGTH_LONG).show()
             }
         }
+
     }
     fun delete(view: View){
         val title = binding.editText.text.toString()
@@ -77,4 +78,5 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, "Todo is Deleted", Toast.LENGTH_LONG).show()
         }
     }
+
 }

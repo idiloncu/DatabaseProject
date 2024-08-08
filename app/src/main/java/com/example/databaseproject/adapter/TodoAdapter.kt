@@ -5,12 +5,13 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.databaseproject.databinding.RecyclerRowBinding
 import com.example.databaseproject.model.Todo
 import com.example.databaseproject.model.ToDoModel
 
-class TodoAdapter(var todoList: List<Todo>) : RecyclerView.Adapter<TodoAdapter.ToDoHolder>() {
+class TodoAdapter(var todoList: List<Todo>) : ListAdapter<ToDoModel, TodoAdapter.ToDoHolder>(TodoCallback()) {
     class ToDoHolder(val recyclerRowBinding: RecyclerRowBinding) : RecyclerView.ViewHolder(recyclerRowBinding.root) {
     }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ToDoHolder {
@@ -26,10 +27,10 @@ class TodoAdapter(var todoList: List<Todo>) : RecyclerView.Adapter<TodoAdapter.T
     override fun getItemCount(): Int {
         return todoList.size
     }
-    fun submitList(list: List<Todo>) {
-        todoList = list
-        notifyDataSetChanged()
-    }
+//    fun submitList(list: List<Todo>) {
+//        todoList = list
+//        notifyDataSetChanged()
+//    }
 
     class TodoCallback : DiffUtil.ItemCallback<ToDoModel>() {
         override fun areItemsTheSame(oldItem: ToDoModel, newItem: ToDoModel): Boolean {
@@ -40,5 +41,4 @@ class TodoAdapter(var todoList: List<Todo>) : RecyclerView.Adapter<TodoAdapter.T
             return oldItem == newItem
         }
     }
-
 }
