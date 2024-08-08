@@ -31,6 +31,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
+        initBinding()
 
         db = Room.databaseBuilder(applicationContext, TodoDatabase::class.java, NAME)
             .allowMainThreadQueries()    // it worked but I should use Rxjava for huge apps
@@ -40,11 +41,11 @@ class MainActivity : AppCompatActivity() {
         if (binding.editText.text == binding.recyclerView.context){
             delete(view)
         }
-
-        todoAdapter = TodoAdapter(dao.getAllTodo())
+        todoAdapter = TodoAdapter(dao.getAllTodo()){
+            clickedItem->getTodoList(clickedItem)
+        }
         binding.recyclerView.adapter = todoAdapter
         binding.recyclerView.layoutManager = LinearLayoutManager(this@MainActivity)
-
 
         lifecycleScope.launch {
             todoViewModel.allTodos.observe(this@MainActivity) { todos ->
@@ -54,10 +55,31 @@ class MainActivity : AppCompatActivity() {
         binding.deleteButton.setOnClickListener {
             delete(view)
         }
-
     }
-    fun save(view: View){
+    private fun initBinding(){
+        with(binding){
+            recyclerView.apply {
+                adapter=TodoAdapter(emptyList()){
+                    item->getTodoList(item)
+                }.apply {
 
+                }
+            }
+        }
+    }
+    private fun getTodoList(selectedItem: ToDoModel){
+        todoAdapter.submitList(todoAdapter.currentList.map { newItem->
+            if(newItem==selectedItem){
+                newItem.copy()
+            }
+            else{
+                newItem
+            }
+
+        })
+    }
+
+    fun save(view: View){
         binding.saveButton.setOnClickListener{
             val title = binding.editText.text.toString()
             if (title.isNotEmpty()) {
@@ -66,7 +88,6 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "Todo is successfully Added", Toast.LENGTH_LONG).show()
             }
         }
-
     }
     fun delete(view: View){
         val title = binding.editText.text.toString()
@@ -78,5 +99,4 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, "Todo is Deleted", Toast.LENGTH_LONG).show()
         }
     }
-
 }
