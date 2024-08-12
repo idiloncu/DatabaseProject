@@ -13,10 +13,8 @@ import com.example.databaseproject.databinding.ActivityMainBinding
 import com.example.databaseproject.db.TodoDao
 import com.example.databaseproject.db.TodoDatabase
 import com.example.databaseproject.db.TodoDatabase.Companion.NAME
-import com.example.databaseproject.model.ToDoModel
 import com.example.databaseproject.model.Todo
 import com.example.databaseproject.viewmodel.ToDoViewModel
-import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -36,65 +34,59 @@ class MainActivity : AppCompatActivity() {
         db = Room.databaseBuilder(applicationContext, TodoDatabase::class.java, NAME)
             .allowMainThreadQueries()    // it worked but I should use Rxjava for huge apps
             .build()
+
         dao = db.getToDoDao()
-        save(view)
-        if (binding.editText.text == binding.recyclerView.context){
-            delete(view)
-        }
-        todoAdapter = TodoAdapter(dao.getAllTodo()){
-            clickedItem->getTodoList(clickedItem)
-        }
+
+        todoAdapter = TodoAdapter()
         binding.recyclerView.adapter = todoAdapter
         binding.recyclerView.layoutManager = LinearLayoutManager(this@MainActivity)
 
         lifecycleScope.launch {
             todoViewModel.allTodos.observe(this@MainActivity) { todos ->
-                todoAdapter.todoList
+                todoAdapter.submitList(todos)
+
             }
         }
+        save(view)
         binding.deleteButton.setOnClickListener {
             delete(view)
         }
     }
+
     private fun initBinding(){
         with(binding){
             recyclerView.apply {
-                adapter=TodoAdapter(emptyList()){
-                    item->getTodoList(item)
-                }.apply {
 
-                }
             }
         }
     }
-    private fun getTodoList(selectedItem: ToDoModel){
-        todoAdapter.submitList(todoAdapter.currentList.map { newItem->
-            if(newItem==selectedItem){
-                newItem.copy()
-            }
-            else{
-                newItem
-            }
-
-        })
-    }
+//    private fun getTodoList(selectedItem: ToDoModel){
+//        todoAdapter.submitList(todoAdapter.currentList.map { newItem->
+//            if(newItem==selectedItem){
+//                newItem.copy()
+//            }
+//            else{
+//                newItem
+//            }
+//        })
+//    }
 
     fun save(view: View){
-        binding.saveButton.setOnClickListener{
+        val todo = Todo(binding.editText.text.toString(), binding.editText.text.toString())
             val title = binding.editText.text.toString()
             if (title.isNotEmpty()) {
                 todoViewModel.addTodo(binding.editText.text.toString(), dao)
+                todoAdapter.notifyDataSetChanged()
+                dao.getAllTodo()
                 binding.editText.text.clear()
                 Toast.makeText(this, "Todo is successfully Added", Toast.LENGTH_LONG).show()
             }
-        }
     }
     fun delete(view: View){
         val title = binding.editText.text.toString()
-        val todoDelete=todoAdapter.todoList.find { it.title == title }
+        val todoDelete=todoAdapter.currentList.find { it.title == title }
         todoDelete?.let {
-            todoViewModel.deleteTodo(it, dao)
-            todoAdapter.notifyDataSetChanged()
+            todoViewModel.deleteTodo(todoDelete, dao)
             binding.editText.text.clear()
             Toast.makeText(this, "Todo is Deleted", Toast.LENGTH_LONG).show()
         }
