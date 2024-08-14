@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.room.Room
-import com.example.databaseproject.MyApplication.Companion.mContext
+import com.example.databaseproject.viewmodel.MyApplication.Companion.mContext
 import com.example.databaseproject.db.TodoDao
 import com.example.databaseproject.db.TodoDatabase
 import com.example.databaseproject.db.TodoDatabase.Companion.NAME

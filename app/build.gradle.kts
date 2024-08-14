@@ -43,29 +43,22 @@ dependencies {
 
     val room_version = "2.6.1"
 
-    implementation("androidx.room:room-runtime:$room_version")
+    implementation(libs.androidx.runtime)
 
     // To use Kotlin annotation processing tool (kapt)
-    kapt(libs.androidx.room.compiler)
-
-    // optional - Kotlin Extensions and Coroutines support for Room
-    implementation("androidx.room:room-ktx:$room_version")
-
+    kapt(libs.androidx.compiler)
+    // To use Kotlin Symbol Processing (KSP)
+    implementation(libs.androidx.ktx)
     // optional - RxJava2 support for Room
-    implementation("androidx.room:room-rxjava2:$room_version")
-
+    implementation(libs.androidx.rxjava2)
     // optional - RxJava3 support for Room
-    implementation("androidx.room:room-rxjava3:$room_version")
-
+    implementation(libs.androidx.rxjava3)
     // optional - Guava support for Room, including Optional and ListenableFuture
-    implementation("androidx.room:room-guava:$room_version")
-
+    implementation(libs.androidx.guava)
     // optional - Test helpers
-    testImplementation("androidx.room:room-testing:$room_version")
-
+    testImplementation(libs.androidx.testing)
     // optional - Paging 3 Integration
-    implementation("androidx.room:room-paging:$room_version")
-
+    implementation(libs.androidx.paging)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -79,5 +72,5 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$2.6.1")
+    implementation(libs.androidx.lifecycle)
 }
